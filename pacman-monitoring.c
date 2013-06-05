@@ -14,10 +14,49 @@
 #include <errno.h>
 #include <stdio.h>
 
+#include <curl/curl.h>
+#include <curl/easy.h>
+#include <string.h>
+
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
+
+int get_event_list(){
+    CURL *curl;
+    FILE *f;
+    CURLcode res;
+    char *url = "http://install.antergos.com/events.xml";
+    char outfilename[FILENAME_MAX] = "/tmp/remendo-events.xml";
+    curl = curl_easy_init();
+    if (curl){
+        printf("Downloading file...\n");
+        f = fopen(outfilename,"wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, f);
+        res = curl_easy_perform(curl);
+        // cleanup
+        curl_easy_cleanup(curl);
+        fclose(f);
+        printf("Download completed!\n");
+
+        return 0;
+    }
+    else{
+        printf("Failed downloading events.xml\n");
+        return 1;
+    }
+}
+
 static void             /* Display information from inotify_event structure */
 displayInotifyEvent(struct inotify_event *i)
 {
-    if (i->mask & IN_OPEN)        printf("Pacman executed");
+    if (i->mask & IN_OPEN){
+        printf("Pacman executed\n");
+        get_event_list();
+    }        
     printf("\n");
 }
 
