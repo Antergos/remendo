@@ -1,0 +1,7 @@
+<possible_events>
+	<event id='1'>
+		<name>Changed package name</name>
+		<description>The following package has changed its name, so we need to do some changes in your computer</description>
+		<url_script>http://install.antergos.com/1.sh</url_script>
+	</event>
+</possible_events>
