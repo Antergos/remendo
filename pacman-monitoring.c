@@ -1,25 +1,13 @@
 /*************************************************************************\
-*                  Copyright (C) Michael Kerrisk, 2010.                   *
+*                  Alexandre Filgueira - Antergos                         *
 *                                                                         *
 * This program is free software. You may use, modify, and redistribute it *
 * under the terms of the GNU Affero General Public License as published   *
 * by the Free Software Foundation, either version 3 or (at your option)   *
 * any later version. This program is distributed without any warranty.    *
-* See the file COPYING.agpl-v3 for details.                               *
+*                                                                         *
 \*************************************************************************/
 
-/* demo_inotify.c
-
-   Demonstrate the use of the inotify API.
-
-   Usage: demo_inotify pathname...
-
-   The program monitors each of the files specified on the command line for all
-   possible file events.
-
-   This program is Linux-specific. The inotify API is available in Linux 2.6.13
-   and later.
-*/
 #include <sys/inotify.h>
 #include <limits.h>
 #include <sys/types.h>
@@ -64,7 +52,7 @@ main()
             perror( "read" );
         }
 
-        /* Process all of the events in buffer returned by read() */
+        /* Process events in buffer returned by read() */
 
         for (p = buf; p < buf + numRead; ) {
             event = (struct inotify_event *) p;
