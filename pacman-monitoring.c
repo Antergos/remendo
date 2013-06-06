@@ -18,6 +18,28 @@
 #include <curl/easy.h>
 #include <string.h>
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
+const char *remendo_events_file = "/tmp/remendo-events.xml";
+
+int search_events(){
+    LIBXML_TEST_VERSION
+
+    xmlDocPtr doc; /* the resulting document tree */
+
+    doc = xmlReadFile(remendo_events_file, NULL, 0);
+    if (doc == NULL) {
+        fprintf(stderr, "Failed to parse %s\n", remendo_events_file);
+    return;
+    }
+    else{
+        printf("Funciono\n");
+    }
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+}
+
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t written = fwrite(ptr, size, nmemb, stream);
     return written;
@@ -28,18 +50,21 @@ int get_event_list(){
     FILE *f;
     CURLcode res;
     char *url = "http://install.antergos.com/events.xml";
-    char outfilename[FILENAME_MAX] = "/tmp/remendo-events.xml";
     curl = curl_easy_init();
     if (curl){
-        printf("Downloading file...\n");
-        f = fopen(outfilename,"wb");
+        printf("Downloading XML file...\n");
+
+        f = fopen(remendo_events_file,"wb");
         curl_easy_setopt(curl, CURLOPT_URL, url);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, f);
         res = curl_easy_perform(curl);
+
         // cleanup
         curl_easy_cleanup(curl);
+
         fclose(f);
+
         printf("Download completed!\n");
 
         return 0;
@@ -56,6 +81,7 @@ displayInotifyEvent(struct inotify_event *i)
     if (i->mask & IN_OPEN){
         printf("Pacman executed\n");
         get_event_list();
+        search_events();
     }        
     printf("\n");
 }

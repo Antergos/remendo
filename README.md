@@ -19,3 +19,6 @@
  * Changed package name: We provide the user with a package that has now changed its name and it doesn't depend on any other package, so there's no way we could do it quietly (E.g.: hotot-data-git to hotot-data)
  * New announcement in Arch Linux website: Remendo should warn the user about it and if we didn't provide an event ID in the XML yet, show only the URL to get more information with some message like "Something has changed, but we didn't have time to look at it yet... or we're still working on it."
  * Suggest new software developed by our team released in new ISOs to let the user know about them.
+
+ ### Compile flags
+ gcc pacman-monitoring.c -o pacman-monitoring -lcurl -I/usr/include/libxml2 -lxml2 -lz -lm -ldl
