@@ -5,7 +5,7 @@ SUBDIRS = src po
 
 remendodocdir = ${prefix}/doc/remendo
 remendodoc_DATA = \
-	README\
+	README.md\
 	COPYING\
 	AUTHORS\
 	ChangeLog\
