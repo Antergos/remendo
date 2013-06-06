@@ -19,25 +19,52 @@
 #include <string.h>
 
 #include <libxml/parser.h>
-#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
 
 const char *remendo_events_file = "/tmp/remendo-events.xml";
 
-int search_events(){
-    LIBXML_TEST_VERSION
+void parseDoc(char *docname, char* taskid);
+void parseItem(xmlDocPtr doc, xmlNodePtr cur);
 
+void get_events(xmlDocPtr doc, xmlNodePtr cur){
+    // xmlChar *id=NULL, *name=NULL, *description=NULL, *url=NULL;
+    cur=cur->xmlChildrenNode;
+    while(cur != NULL){
+        if(!xmlStrcmp(cur->name, (const xmlChar*)"description")){
+            printf("%s\n", xmlNodeListGetString(doc,cur->xmlChildrenNode, 1));
+        }
+        cur=cur->next;
+    }
+}
+
+int parse_xml(){
     xmlDocPtr doc; /* the resulting document tree */
+    xmlNodePtr cur;
 
-    doc = xmlReadFile(remendo_events_file, NULL, 0);
+    doc = xmlParseFile(remendo_events_file);
     if (doc == NULL) {
         fprintf(stderr, "Failed to parse %s\n", remendo_events_file);
     return;
     }
-    else{
-        printf("Funciono\n");
+
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL){
+        fprintf(stderr, "Empty document\n");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+    cur=cur->xmlChildrenNode;
+    int count=0;
+    while(cur != NULL){
+        if(!xmlStrcmp(cur->name, (const xmlChar *)"event")){
+            get_events(doc,cur);
+            ++count;
+        }
+        cur=cur->next;
     }
     xmlFreeDoc(doc);
-    xmlCleanupParser();
 }
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
@@ -81,7 +108,7 @@ displayInotifyEvent(struct inotify_event *i)
     if (i->mask & IN_OPEN){
         printf("Pacman executed\n");
         get_event_list();
-        search_events();
+        parse_xml();
     }        
     printf("\n");
 }
