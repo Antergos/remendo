@@ -23,3 +23,4 @@ const char *archlinux_xml = "https://www.archlinux.org/feeds/news/";
 const char *remendo_events_file = "/tmp/remendo-events.xml";
 const char *archlinux_events_file = "/tmp/archlinux-events.xml";
 
+static void displayInotifyEvent(struct inotify_event *i);
