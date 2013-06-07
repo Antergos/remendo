@@ -15,7 +15,12 @@ AM_CFLAGS =\
 bin_PROGRAMS = remendo
 
 remendo_SOURCES = \
-	main.c
+	remendo.c \
+	remendo.h \
+	xml_handler.c \
+	xml_handler.h
+	
+	
 
 remendo_LDFLAGS = 
 
