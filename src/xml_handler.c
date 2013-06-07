@@ -17,9 +17,72 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <unistd.h>
+#include <time.h>
+
 #include "xml_handler.h"
 
-void get_events(xmlDocPtr doc, xmlNodePtr cur, char *subchild){
+int checkDatabase(){
+	// Create database.db if doesn't exists
+	if( access(db_uri, F_OK ) == -1 ) {
+		printf("File database.db not found. Creating it now...\n");
+		if(createDatabase() == 0){
+			printf("Database created.\n");
+		}
+		else{
+			printf("Something went wrong while creating database.db\n");
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int createDatabase(){
+	time_t now;
+	struct tm * timeinfo;
+	int rc;
+	xmlTextWriterPtr writer;
+
+	writer = xmlNewTextWriterFilename(db_uri, 0);
+	if(writer == NULL){
+		printf("Error creating the xml writer\n");
+		return 1;
+	}
+
+	rc = xmlTextWriterStartDocument(writer, NULL, ENCODING, NULL);
+	if(rc < 0){
+		printf("Error starting the document\n");
+		return 1;
+	}
+
+	rc = xmlTextWriterStartElement(writer, BAD_CAST "remendo_db");
+	if(rc < 0){
+		printf("Error creating the root element in the XML file\n");
+		return 1;
+	}
+
+	now = time(0);
+	timeinfo = localtime (&now);
+	xmlChar string_date [80];
+	strftime(string_date,80,"%s",timeinfo);
+	rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "creation", string_date);
+	if(rc < 0){
+		printf("Error creating attribute of root element\n");
+		return 1;
+	}
+
+	rc = xmlTextWriterEndDocument(writer);
+	if(rc < 0){
+		printf("Error ending the XML file\n");
+		return 1;
+	}
+
+	xmlFreeTextWriter(writer);
+	xmlCleanupParser();
+	return 0;
+}
+
+void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild){
     xmlChar *key=NULL;
     cur = cur->xmlChildrenNode;
     while(cur != NULL){
@@ -39,7 +102,7 @@ int parse_xml(char *xml_file, char *child, char *subchild){
     doc = xmlParseFile(xml_file);
     if (doc == NULL) {
         fprintf(stderr, "Failed to parse %s\n", xml_file);
-    return;
+		return 1;
     }
 
     cur = xmlDocGetRootElement(doc);
@@ -47,15 +110,16 @@ int parse_xml(char *xml_file, char *child, char *subchild){
     if (cur == NULL){
         fprintf(stderr, "Empty document\n");
         xmlFreeDoc(doc);
-        return;
+        return 1;
     }
 
     cur = cur->xmlChildrenNode;
     while(cur != NULL){
         if((!xmlStrcmp(cur->name, (const xmlChar *)child))){
-            get_events(doc,cur,subchild);
+            get_node(doc,cur,subchild);
         }
         cur = cur->next;
     }
     xmlFreeDoc(doc);
+	return 0;
 }

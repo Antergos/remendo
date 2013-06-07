@@ -17,9 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef XML_HANDLER_H
+#define XML_HANDLER_H
+
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
+#include <libxml/encoding.h>
+#include <libxml/xmlwriter.h>
 
-void get_events(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
+#define ENCODING "ISO-8859-1"
+
+const char *db_uri = "database.db";
+
+char timeToString(time_t time);
+char getCurrentTimeString();
+int checkDatabase();
+int createDatabase();
+void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
 int parse_xml(char *xml_file, char *child, char *subchild);
 
+#endif

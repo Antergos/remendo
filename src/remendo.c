@@ -25,7 +25,11 @@
 
 #include "remendo.h"
 #include "dl_events.h"
+
+#ifndef XML_HANDLER_H
+#define XML_HANDLER_H
 #include "xml_handler.h"
+#endif
 
 
 static void displayInotifyEvent(struct inotify_event *i){
@@ -51,7 +55,9 @@ int main(){
     char buf[BUF_LEN];
     ssize_t numRead;
     char *p;
-    struct inotify_event *event;
+    struct inotify_event *event; 
+
+	checkDatabase();
 
     inotifyFd = inotify_init();
     if ( inotifyFd < 0 ) {
