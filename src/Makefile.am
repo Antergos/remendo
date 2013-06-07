@@ -18,7 +18,9 @@ remendo_SOURCES = \
 	remendo.c \
 	remendo.h \
 	xml_handler.c \
-	xml_handler.h
+	xml_handler.h \
+	dl_events.c \
+	dl_events.h
 	
 	
 

@@ -27,6 +27,6 @@
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
 
-void get_events(xmlDocPtr doc, xmlNodePtr cur);
-int parse_xml(char xml_file);
+void get_events(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
+int parse_xml(char *xml_file, char *child, char *subchild);
 

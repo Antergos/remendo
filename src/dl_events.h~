@@ -1,5 +1,5 @@
 /*
- * remendo.h
+ * dl_events.h
  *
  * Copyright (C) 2013 - Alex Filgueira
  *
@@ -17,9 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef DL_EVENTS_H
+#define DL_EVENTS_H
+
 const char *antergos_xml = "http://install.antergos.com/events.xml";
 const char *archlinux_xml = "https://www.archlinux.org/feeds/news/";
 
-const char *remendo_events_file = "/tmp/remendo-events.xml";
-const char *archlinux_events_file = "/tmp/archlinux-events.xml";
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);
+int get_event_list(const char *url, const char* file);
+static void displayInotifyEvent(struct inotify_event *i);
 
+#endif
