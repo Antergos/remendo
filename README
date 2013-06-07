@@ -19,3 +19,9 @@
  * Changed package name: We provide the user with a package that has now changed its name and it doesn't depend on any other package, so there's no way we could do it quietly (E.g.: hotot-data-git to hotot-data)
  * New announcement in Arch Linux website: Remendo should warn the user about it and if we didn't provide an event ID in the XML yet, show only the URL to get more information with some message like "Something has changed, but we didn't have time to look at it yet... or we're still working on it."
  * Suggest new software developed by our team released in new ISOs to let the user know about them.
+
+## How can remendo manage the events
+
+ * On first run, remendo can create a file database with the current date. New events will only be shown to the user after that date. It can be that the user first installed the system and later on Remendo, having some possible events that he wants to solve with it, but I can't think of any other idea.
+ * The database is updated with new events, marked as "Solved", "Manually Solved" or "Not Solved".
+ * The database can be located in /usr/share/remendo/database.db
