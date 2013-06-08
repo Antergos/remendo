@@ -33,6 +33,7 @@
 
 
 static void displayInotifyEvent(struct inotify_event *i){
+	
     if (i->mask & IN_OPEN){
         printf("Pacman executed\n");
 
@@ -41,9 +42,11 @@ static void displayInotifyEvent(struct inotify_event *i){
 
 		// Check for unhandled events
         // parse_xml(remendo_events_file, "event", "name");
+		// parse_xml(remendo_events_file, "event", "attribute");
+		checkEvents();
 
 		// Download Arch Linux XML file
-		get_event_list(archlinux_xml, archlinux_events_file);
+		// get_event_list(archlinux_xml, archlinux_events_file);
     }        
     printf("\n");
 }

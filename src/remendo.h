@@ -17,10 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const char *antergos_xml = "http://install.antergos.com/events.xml";
-const char *archlinux_xml = "https://www.archlinux.org/feeds/news/";
+#ifndef REMENDO_H
+#define REMENDO_H
 
-const char *remendo_events_file = "/tmp/remendo-events.xml";
-const char *archlinux_events_file = "/tmp/archlinux-events.xml";
+char *antergos_xml = "http://install.antergos.com/events.xml";
+char *archlinux_xml = "https://www.archlinux.org/feeds/news/";
+
+char *remendo_events_file = "/tmp/remendo-events.xml";
+char *archlinux_events_file = "/tmp/archlinux-events.xml";
 
 static void displayInotifyEvent(struct inotify_event *i);
+
+#endif

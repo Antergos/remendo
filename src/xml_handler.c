@@ -19,12 +19,14 @@
 
 #include <unistd.h>
 #include <time.h>
+#include <string.h>
 
 #include "xml_handler.h"
 
+
 int checkDatabase(){
 	// Create database.db if doesn't exists
-	if( access(db_uri, F_OK ) == -1 ) {
+	if(access(db_uri, F_OK) == -1) {
 		printf("File database.db not found. Creating it now...\n");
 		if(createDatabase() == 0){
 			printf("Database created.\n");
@@ -71,7 +73,7 @@ int createDatabase(){
 		return 1;
 	}
 
-	rc = xmlTextWriterEndDocument(writer);
+	rc = xmlTextWriterEndElement(writer);
 	if(rc < 0){
 		printf("Error ending the XML file\n");
 		return 1;
@@ -81,6 +83,7 @@ int createDatabase(){
 	xmlCleanupParser();
 	return 0;
 }
+	
 
 void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild){
     xmlChar *key=NULL;
@@ -93,6 +96,51 @@ void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild){
 		}
         cur = cur->next;
     }
+}
+
+xmlChar *get_attribute(xmlNodePtr cur, char *search_for){
+	xmlAttr* attribute = cur->properties;
+	xmlChar* value;
+	
+	while(attribute && attribute->name && attribute->children){
+		if(strcmp(attribute->name, search_for) == 0){
+			value = xmlNodeListGetString(cur->doc, attribute->children, 1);
+		}
+		attribute = attribute->next;
+	}
+	return(value);
+}
+
+xmlChar *getCreation(const xmlChar *node){
+	printf("Searching for creation date in %s...\n",db_uri);
+
+	xmlDocPtr doc;
+    xmlNodePtr cur;
+	xmlChar *attribute;
+
+    doc = xmlParseFile(db_uri);
+    if (doc == NULL) {
+        fprintf(stderr, "Failed to parse %s\n", db_uri);
+		return 1;
+    }
+
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL){
+        fprintf(stderr, "Empty document\n");
+        xmlFreeDoc(doc);
+        return 1;
+    }
+	
+    while(cur != NULL){
+        if((!xmlStrcmp(cur->name, (const xmlChar *)node))){
+			char *cre = "creation";
+			attribute = get_attribute(cur, cre);
+        }
+        cur = cur->next;
+    }
+    xmlFreeDoc(doc);
+	return(attribute);
 }
 
 int parse_xml(char *xml_file, char *child, char *subchild){
@@ -113,13 +161,21 @@ int parse_xml(char *xml_file, char *child, char *subchild){
         return 1;
     }
 
-    cur = cur->xmlChildrenNode;
+	if(strcmp(subchild, "creation") != 0){
+		cur = cur->xmlChildrenNode;
+	}
+	
     while(cur != NULL){
-        if((!xmlStrcmp(cur->name, (const xmlChar *)child))){
-            get_node(doc,cur,subchild);
+        if((!xmlStrcmp(cur->name, (const xmlChar *)child))){	
+			get_node(doc,cur,subchild);
         }
         cur = cur->next;
     }
     xmlFreeDoc(doc);
 	return 0;
+}
+
+void checkEvents(){
+	xmlChar *db_creation;
+	db_creation = getCreation((const xmlChar *)"remendo_db");
 }

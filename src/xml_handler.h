@@ -27,13 +27,16 @@
 
 #define ENCODING "ISO-8859-1"
 
-const char *db_uri = "database.db";
+char *db_uri = "database.db";
 
 char timeToString(time_t time);
 char getCurrentTimeString();
 int checkDatabase();
 int createDatabase();
 void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
+xmlChar *get_attribute(xmlNodePtr cur, char *search_for);
+xmlChar *getCreation();
 int parse_xml(char *xml_file, char *child, char *subchild);
+void checkEvents();
 
 #endif
