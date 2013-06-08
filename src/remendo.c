@@ -41,9 +41,7 @@ static void displayInotifyEvent(struct inotify_event *i){
         get_event_list(antergos_xml, remendo_events_file);
 
 		// Check for unhandled events
-        // parse_xml(remendo_events_file, "event", "name");
-		// parse_xml(remendo_events_file, "event", "attribute");
-		checkEvents();
+		checkEvents(antergos_xml);
 
 		// Download Arch Linux XML file
 		// get_event_list(archlinux_xml, archlinux_events_file);

@@ -20,10 +20,14 @@
 #include <unistd.h>
 #include <time.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "xml_handler.h"
 
-
+/*Creates database.db if doesn't exist.
+ This is the database where remendo stores which events
+ have been fixed, or not fixed*/
 int checkDatabase(){
 	// Create database.db if doesn't exists
 	if(access(db_uri, F_OK) == -1) {
@@ -85,17 +89,16 @@ int createDatabase(){
 }
 	
 
-void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild){
+xmlChar *get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild){
     xmlChar *key=NULL;
     cur = cur->xmlChildrenNode;
     while(cur != NULL){
         if((!xmlStrcmp(cur->name, (const xmlChar *)subchild))){
 			key = xmlNodeListGetString(doc,cur->xmlChildrenNode, 1);
-			printf("%s\n", key);
-			xmlFree(key);
 		}
         cur = cur->next;
     }
+	return(key);
 }
 
 xmlChar *get_attribute(xmlNodePtr cur, char *search_for){
@@ -111,16 +114,19 @@ xmlChar *get_attribute(xmlNodePtr cur, char *search_for){
 	return(value);
 }
 
-xmlChar *getCreation(const xmlChar *node){
-	printf("Searching for creation date in %s...\n",db_uri);
+/*Get creation attribute from databases. 
+This value is used to know which events can be fixed.
+The value is a date*/
+xmlChar *getCreation(char *xml_file, const xmlChar *node){
+	printf("Searching for creation date in %s...\n",node);
 
 	xmlDocPtr doc;
     xmlNodePtr cur;
 	xmlChar *attribute;
 
-    doc = xmlParseFile(db_uri);
+    doc = xmlParseFile(xml_file);
     if (doc == NULL) {
-        fprintf(stderr, "Failed to parse %s\n", db_uri);
+        fprintf(stderr, "Failed to parse %s\n", xml_file);
 		return 1;
     }
 
@@ -143,9 +149,10 @@ xmlChar *getCreation(const xmlChar *node){
 	return(attribute);
 }
 
-int parse_xml(char *xml_file, char *child, char *subchild){
+int parse_xml(char *xml_file, char *child, char *db_creation){
     xmlDocPtr doc;
     xmlNodePtr cur;
+	char *eventCreation;
 
     doc = xmlParseFile(xml_file);
     if (doc == NULL) {
@@ -161,13 +168,20 @@ int parse_xml(char *xml_file, char *child, char *subchild){
         return 1;
     }
 
-	if(strcmp(subchild, "creation") != 0){
-		cur = cur->xmlChildrenNode;
-	}
-	
+	cur = cur->xmlChildrenNode;
     while(cur != NULL){
-        if((!xmlStrcmp(cur->name, (const xmlChar *)child))){	
-			get_node(doc,cur,subchild);
+        if((!xmlStrcmp(cur->name, (const xmlChar *)child))){
+			
+			eventCreation = get_attribute(cur, "creation");
+
+			if(dateCharToInt(db_creation) <= dateCharToInt(eventCreation)){
+				printf("###################################\n");
+				printf("#       I can handle this:\n");
+				printf("- Name: %s\n", get_node(doc,cur,"name"));
+				printf("- Description: %s\n", get_node(doc,cur,"description"));
+				printf("- Script: %s\n", get_node(doc,cur,"url_script"));
+				printf("###################################");
+			}
         }
         cur = cur->next;
     }
@@ -175,7 +189,13 @@ int parse_xml(char *xml_file, char *child, char *subchild){
 	return 0;
 }
 
-void checkEvents(){
+void checkEvents(char *xml_file){
 	xmlChar *db_creation;
-	db_creation = getCreation((const xmlChar *)"remendo_db");
+	db_creation = getCreation(db_uri, (const xmlChar *)"remendo_db");
+	parse_xml(xml_file, "event", db_creation);
+}
+
+unsigned long dateCharToInt(char *value){
+	unsigned long x = strtoul(value, NULL, 10);
+	return x;
 }

@@ -33,10 +33,11 @@ char timeToString(time_t time);
 char getCurrentTimeString();
 int checkDatabase();
 int createDatabase();
-void get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
+xmlChar *get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
 xmlChar *get_attribute(xmlNodePtr cur, char *search_for);
-xmlChar *getCreation();
-int parse_xml(char *xml_file, char *child, char *subchild);
-void checkEvents();
+xmlChar *getCreation(char *xml_file, const xmlChar *node);
+int parse_xml(char *xml_file, char *child, char *db_creation);
+void checkEvents(char *xml_file);
+unsigned long dateCharToInt(char *value);
 
 #endif
