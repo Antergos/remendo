@@ -11,7 +11,7 @@
 	- The user will have to choose between "Fixme the problem" or "I'm gonna do it manually" option.
  * If the user choose "I'm gonna do it manually", Remendo should mark the event as read and pacman should be reanudated.
  * If the user choose "Fixme the problem", Remendo will download the script provided in the XML URL field and execute this script.
-	- After finishind sucessfully the event fix, Remendo will mark it as read
+	- After finishing sucessfully the event fix, Remendo will mark it as read
 
 
 ## Possible events
