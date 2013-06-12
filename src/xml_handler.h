@@ -24,7 +24,6 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
-#include <libxml/xpath.h>
 
 #define ENCODING "ISO-8859-1"
 
