@@ -24,6 +24,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/xpath.h>
 
 #define ENCODING "ISO-8859-1"
 
@@ -37,7 +38,8 @@ xmlChar *get_node(xmlDocPtr doc, xmlNodePtr cur, char *subchild);
 xmlChar *get_attribute(xmlNodePtr cur, char *search_for);
 xmlChar *getCreation(char *xml_file, const xmlChar *node);
 int parse_xml(char *xml_file, char *child, char *db_creation);
-void checkEvents(char *xml_file);
+void checkNewEvents(char *xml_file);
+void saveNewEvent(char *keyword, char *value, int type);
 unsigned long dateCharToInt(char *value);
 
 #endif

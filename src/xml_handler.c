@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #include "xml_handler.h"
+#include "remendo-gtk.h"
 
 /*Creates database.db if doesn't exist.
  This is the database where remendo stores which events
@@ -154,6 +155,8 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
     xmlNodePtr cur;
 	char *eventCreation;
 
+	printf("Searching for events...\n");
+
     doc = xmlParseFile(xml_file);
     if (doc == NULL) {
         fprintf(stderr, "Failed to parse %s\n", xml_file);
@@ -171,28 +174,64 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
 	cur = cur->xmlChildrenNode;
     while(cur != NULL){
         if((!xmlStrcmp(cur->name, (const xmlChar *)child))){
-			
 			eventCreation = get_attribute(cur, "creation");
 
 			if(dateCharToInt(db_creation) <= dateCharToInt(eventCreation)){
-				printf("###################################\n");
-				printf("#       I can handle this:\n");
-				printf("- Name: %s\n", get_node(doc,cur,"name"));
-				printf("- Description: %s\n", get_node(doc,cur,"description"));
-				printf("- Script: %s\n", get_node(doc,cur,"url_script"));
-				printf("###################################");
+				printf("New event: '%s' to %s...\n", get_node(doc,cur,"name"), db_uri);
+				saveNewEvent("event", NULL,0);
+				saveNewEvent("name", get_node(doc,cur,"name"),1);
+				saveNewEvent("description", get_node(doc,cur,"description"),1);
+				saveNewEvent("url_script", get_node(doc,cur,"url_script"),1);
 			}
         }
         cur = cur->next;
     }
+	
     xmlFreeDoc(doc);
 	return 0;
 }
 
-void checkEvents(char *xml_file){
+void checkNewEvents(char *xml_file){
 	xmlChar *db_creation;
 	db_creation = getCreation(db_uri, (const xmlChar *)"remendo_db");
 	parse_xml(xml_file, "event", db_creation);
+}
+
+void saveNewEvent(char *keyword, char *value, int type){
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+	
+
+    doc = xmlParseFile(db_uri);
+    if (doc == NULL) {
+        fprintf(stderr, "Failed to parse %s\n", db_uri);
+		return 1;
+    }
+
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL){
+        fprintf(stderr, "Empty document\n");
+        xmlFreeDoc(doc);
+        return 1;
+    }
+
+	if(type == 1) cur = cur->xmlChildrenNode;
+	
+    while(cur != NULL){
+		if(type == 0){
+    		if((!xmlStrcmp(cur->name, (const xmlChar *)"remendo_db"))){
+				xmlNewTextChild(cur, NULL, keyword, value);
+			}
+        }else{
+			if((!xmlStrcmp(cur->name, (const xmlChar *)"event"))){
+				xmlNewTextChild(cur, NULL, keyword, value);
+			}
+		}
+        cur = cur->next;
+    }
+	xmlSaveFormatFile(db_uri, doc, 1);
+    xmlFreeDoc(doc);
 }
 
 unsigned long dateCharToInt(char *value){

@@ -20,7 +20,9 @@ remendo_SOURCES = \
 	xml_handler.c \
 	xml_handler.h \
 	dl_events.c \
-	dl_events.h
+	dl_events.h \
+	remendo-gtk.c \
+	remendo-gtk.h
 	
 	
 
