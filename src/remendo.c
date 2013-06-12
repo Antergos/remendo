@@ -39,12 +39,11 @@ static void displayInotifyEvent(struct inotify_event *i){
 
 		// Download first our XML file
         get_event_list(antergos_xml, remendo_events_file);
+		// Download Arch Linux XML file
+		// get_event_list(archlinux_xml, archlinux_events_file);
 
 		// Check for unhandled events
 		checkNewEvents(remendo_events_file);
-
-		// Download Arch Linux XML file
-		// get_event_list(archlinux_xml, archlinux_events_file);
     }        
     printf("\n");
 }

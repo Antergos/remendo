@@ -24,7 +24,6 @@
 #include <stdlib.h>
 
 #include "xml_handler.h"
-#include "remendo-gtk.h"
 
 /*Creates database.db if doesn't exist.
  This is the database where remendo stores which events
@@ -182,6 +181,7 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
 				saveNewEvent("name", get_node(doc,cur,"name"),1);
 				saveNewEvent("description", get_node(doc,cur,"description"),1);
 				saveNewEvent("url_script", get_node(doc,cur,"url_script"),1);
+				pending_events = 1;
 			}
         }
         cur = cur->next;
@@ -195,6 +195,13 @@ void checkNewEvents(char *xml_file){
 	xmlChar *db_creation;
 	db_creation = getCreation(db_uri, (const xmlChar *)"remendo_db");
 	parse_xml(xml_file, "event", db_creation);
+
+	if(pending_events != 0){
+		//show interface
+		system("./remendo-gtk");
+	}else{
+		printf("No new events to handle.\n");
+	}
 }
 
 void saveNewEvent(char *keyword, char *value, int type){

@@ -4,7 +4,11 @@
 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(localedir)"\" \
-	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
+	-DPACKAGE_SRC_DIR=\""$(srcdir). \
+	$(REMENDO_GTK_CFLAGS). \
+	$(REMENDO_GTK_CFLAGS). \
+	$(LIBXML_CFLAGS). \
+	$(libxml-2.0_CFLAGS)"\" \
 	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\" \
 	$(REMENDO_CFLAGS)
 
@@ -20,9 +24,7 @@ remendo_SOURCES = \
 	xml_handler.c \
 	xml_handler.h \
 	dl_events.c \
-	dl_events.h \
-	remendo-gtk.c \
-	remendo-gtk.h
+	dl_events.h
 	
 	
 
@@ -30,3 +32,6 @@ remendo_LDFLAGS =
 
 remendo_LDADD = $(REMENDO_LIBS)
 
+
+SUBDIRS = \
+	gtk

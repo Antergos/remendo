@@ -31,6 +31,9 @@ LT_INIT
 
 
 
+PKG_CHECK_MODULES(REMENDO_GTK,gtk+-3.0
+libxml-2.0)
+
 PKG_CHECK_MODULES(REMENDO, [libcurl libxml-2.0 ])
 
 
@@ -40,4 +43,5 @@ AC_OUTPUT([
 Makefile
 src/Makefile
 po/Makefile.in
+src/gtk/Makefile
 ])

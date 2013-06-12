@@ -24,10 +24,12 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/xpath.h>
 
 #define ENCODING "ISO-8859-1"
 
 char *db_uri = "database.db";
+int pending_events = 0;
 
 char timeToString(time_t time);
 char getCurrentTimeString();

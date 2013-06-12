@@ -20,21 +20,23 @@
 #include <gtk/gtk.h>
 
 
-void window()
-{
-	GtkWidget * ventana;
-	GtkWidget * etiqueta;
+void  create_main_win(void){
+    GtkBuilder *p_gtk_builder = gtk_builder_new();
 
-	gtk_init (NULL, NULL);
-	ventana = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	etiqueta = gtk_label_new("prueba");
-	gtk_container_add ((GtkContainer *) ventana, etiqueta);
-	
-	gtk_window_set_title((GtkWindow *) ventana, "Remendo");
+    gtk_builder_add_from_file(p_gtk_builder, "remendo-gtk.ui", NULL);
 
-	
-	gtk_widget_show(etiqueta);
-	gtk_widget_show(ventana);
+    
+    GtkWidget *p_window = GTK_WIDGET(gtk_builder_get_object(p_gtk_builder, "remendo"));
+    
+    gtk_widget_show_all(p_window);
+}
 
-	gtk_main();
+int  main(int argc, char *argv[]){
+    gtk_init(&argc, &argv);
+    
+    create_main_win();
+    
+    gtk_main();
+    
+    return 0;
 }
