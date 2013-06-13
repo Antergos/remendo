@@ -31,7 +31,3 @@ remendo_SOURCES = \
 remendo_LDFLAGS = 
 
 remendo_LDADD = $(REMENDO_LIBS)
-
-
-SUBDIRS = \
-	gtk

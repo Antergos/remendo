@@ -1,10 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
-SUBDIRS = remendo po
+SUBDIRS = src po
 
-remendodocdir = ${prefix}/doc/remendo
-remendodoc_DATA = \
+remendo_gtkdocdir = ${prefix}/doc/remendo_gtk
+remendo_gtkdoc_DATA = \
 	README\
 	COPYING\
 	AUTHORS\
@@ -17,7 +17,7 @@ INTLTOOL_FILES = intltool-extract.in \
 	intltool-merge.in \
 	intltool-update.in
 
-EXTRA_DIST = $(remendodoc_DATA) \
+EXTRA_DIST = $(remendo_gtkdoc_DATA) \
 	$(INTLTOOL_FILES)
 
 DISTCLEANFILES = intltool-extract \
@@ -28,4 +28,4 @@ DISTCLEANFILES = intltool-extract \
 
 # Remove doc directory on uninstall
 uninstall-local:
-	-rm -r $(remendodocdir)
+	-rm -r $(remendo_gtkdocdir)
