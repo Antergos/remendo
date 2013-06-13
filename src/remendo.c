@@ -31,8 +31,14 @@
 #include "xml_handler.h"
 #endif
 
+void print_usage(char *argv[]){
+	printf( "usage: %s <interface>\n", argv[0] );
+	printf("Interfaces:\n");
+	printf("\tremendo --gtk\n");
+	printf("\tremendo --qt\n");
+}
 
-static void displayInotifyEvent(struct inotify_event *i){
+static void displayInotifyEvent(struct inotify_event *i, char *argv[]){
 	
     if (i->mask & IN_OPEN){
         printf("Pacman executed\n");
@@ -43,48 +49,61 @@ static void displayInotifyEvent(struct inotify_event *i){
 		// get_event_list(archlinux_xml, archlinux_events_file);
 
 		// Check for unhandled events
-		checkNewEvents(remendo_events_file);
+		if(checkNewEvents(remendo_events_file) == 1){
+			if(strcmp(argv[1], "--gtk") == 0){
+				system("./remendo-gtk");
+			}else{
+				printf("QT not implemented yet\n");
+			}
+		}
     }        
     printf("\n");
 }
 
-#define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
-
-int main(){
+int main(int argc, char *argv[]){
     int inotifyFd, wd, j;
     char buf[BUF_LEN];
     ssize_t numRead;
     char *p;
     struct inotify_event *event; 
 
-	checkDatabase();
+	if(argc != 2){
+		print_usage(argv);
+    }else{
+		if((strcmp(argv[1], "--gtk") != 0) && (strcmp(argv[1], "--qt") != 0)){
+			print_usage(argv);
+		}else{
 
-    inotifyFd = inotify_init();
-    if ( inotifyFd < 0 ) {
-        perror( "inotify_init" );
-    }
+			checkDatabase();
 
-    /* Watch pacman binary */
-    wd = inotify_add_watch( inotifyFd, "/usr/bin/pacman", IN_OPEN );
-    if (wd == -1)
-        perror("inotify_add_watch");
+			inotifyFd = inotify_init();
+			if ( inotifyFd < 0 ) {
+				perror( "inotify_init" );
+			}
 
-    printf("Watching '/usr/bin/pacman' using wd %d\n", wd);
+			/* Watch pacman binary */
+			wd = inotify_add_watch( inotifyFd, "/usr/bin/pacman", IN_OPEN );
+			if (wd == -1)
+				perror("inotify_add_watch");
+
+			printf("Watching '/usr/bin/pacman' using wd %d\n", wd);
 
 
-    for (;;) {
-        numRead = read(inotifyFd, buf, BUF_LEN);
+			for (;;) {
+				numRead = read(inotifyFd, buf, BUF_LEN);
 
-        if ( numRead < 0 ) {
-            perror( "read" );
-        }
+				if ( numRead < 0 ) {
+				    perror( "read" );
+				}
 
-        // Process events in buffer returned by read()
-        for (p = buf; p < buf + numRead; ) {
-            event = (struct inotify_event *) p;
-            displayInotifyEvent(event);
+				// Process events in buffer returned by read()
+				for (p = buf; p < buf + numRead; ) {
+				    event = (struct inotify_event *) p;
+				    displayInotifyEvent(event, argv);
 
-            p += sizeof(struct inotify_event) + event->len;
-        }
-    }
+				    p += sizeof(struct inotify_event) + event->len;
+				}
+			}
+		}
+	}
 }

@@ -19,6 +19,7 @@
 
 #ifndef REMENDO_H
 #define REMENDO_H
+#define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
 char *antergos_xml = "http://install.antergos.com/events.xml";
 char *archlinux_xml = "https://www.archlinux.org/feeds/news/";
@@ -26,6 +27,7 @@ char *archlinux_xml = "https://www.archlinux.org/feeds/news/";
 char *remendo_events_file = "/tmp/remendo-events.xml";
 char *archlinux_events_file = "/tmp/archlinux-events.xml";
 
-static void displayInotifyEvent(struct inotify_event *i);
+void print_usage(char *argv[]);
+static void displayInotifyEvent(struct inotify_event *i, char *argv[]);
 
 #endif

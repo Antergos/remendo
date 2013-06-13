@@ -22,6 +22,5 @@
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);
 int get_event_list(const char *url, const char* file);
-static void displayInotifyEvent(struct inotify_event *i);
 
 #endif

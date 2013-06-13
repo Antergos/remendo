@@ -191,16 +191,18 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
 	return 0;
 }
 
-void checkNewEvents(char *xml_file){
+int checkNewEvents(char *xml_file){
 	xmlChar *db_creation;
 	db_creation = getCreation(db_uri, (const xmlChar *)"remendo_db");
 	parse_xml(xml_file, "event", db_creation);
 
 	if(pending_events != 0){
 		//show interface
-		system("./remendo-gtk");
+		//system("./remendo-gtk");
+		return 1;
 	}else{
 		printf("No new events to handle.\n");
+		return 0;
 	}
 }
 
