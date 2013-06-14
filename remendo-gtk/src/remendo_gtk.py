@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import Gtk, GdkPixbuf, Gdk
+from gi.repository import Gtk, GdkPixbuf, Gdk, Pango
 import os, sys
 import xml.etree.ElementTree as etree
 
@@ -45,11 +45,16 @@ class GUI:
 		Gtk.main_quit()
 
 	def set_event_list(self):
-		event_liststore = Gtk.ListStore(str)
+		event_liststore = Gtk.ListStore(str, str)
 
-		render = Gtk.CellRendererText()
-		event_col = Gtk.TreeViewColumn(None, render, text=0)
+		render_name = Gtk.CellRendererText()
+		render_name.props.weight_set=True
+		render_name.props.weight=Pango.Weight.BOLD
+		event_name_col = Gtk.TreeViewColumn("Event", render_name, text=0)
+		render_info = Gtk.CellRendererText()
+		event_col = Gtk.TreeViewColumn("Info", render_info, text=1)
 		self.event_treeview.set_model(event_liststore)
+		self.event_treeview.append_column(event_name_col)
 		self.event_treeview.append_column(event_col)
 		self.populate_events(event_liststore)
 
@@ -57,9 +62,12 @@ class GUI:
 		tree = etree.parse('../../remendo/database.db')
 		root = tree.getroot()
 
-		events_names = list(root.iter('name'))
-		for name in events_names:
-			event_liststore.append([name.text])
+		for event in root.findall('event'):
+			name = event.find('name').text
+			description = event.find('description').text
+			url_script = event.find('url_script').text
+			event_liststore.append([name, "Description: \n" + description + \
+									"\n" + "Script: " + url_script])
 		
 
 def main():

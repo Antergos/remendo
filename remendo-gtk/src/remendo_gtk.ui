@@ -3,9 +3,10 @@
   <!-- interface-requires gtk+ 3.6 -->
   <object class="GtkWindow" id="remendo">
     <property name="can_focus">False</property>
+    <property name="title" translatable="yes">New events to handle! - Remendo</property>
     <property name="window_position">center</property>
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
+    <property name="default_width">900</property>
+    <property name="default_height">500</property>
     <signal name="destroy" handler="on_remendo_destroy" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
@@ -82,7 +83,7 @@ This is what I got:</property>
             <property name="can_focus">False</property>
             <property name="margin_top">5</property>
             <property name="margin_bottom">5</property>
-            <property name="label" translatable="yes">Event Information Here...</property>
+            <property name="label" translatable="yes">Select a task and click one of the buttons below</property>
           </object>
           <packing>
             <property name="expand">False</property>
