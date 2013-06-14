@@ -176,13 +176,16 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
 			eventCreation = get_attribute(cur, "creation");
 
 			if(dateCharToInt(db_creation) <= dateCharToInt(eventCreation)){
-				printf("New event: '%s' to %s...\n", get_node(doc,cur,"name"), db_uri);
-				saveNewEvent("event", NULL,0);
-				saveNewEvent("name", get_node(doc,cur,"name"),1);
-				saveNewEvent("description", get_node(doc,cur,"description"),1);
-				saveNewEvent("url_script", get_node(doc,cur,"url_script"),1);
-				saveNewEvent("state", "Not fixed",1);
-				pending_events = 1;
+				if(saveNewEvent("name", get_node(doc,cur,"name"),0) != 1){
+					printf("New event: '%s' to %s...\n", get_node(doc,cur,"name"), db_uri);
+					saveNewEvent("event", NULL,1);
+					saveNewEvent("name", get_node(doc,cur,"name"),2);
+					saveNewEvent("description", get_node(doc,cur,"description"),2);
+					saveNewEvent("url_script", get_node(doc,cur,"url_script"),2);
+					saveNewEvent("state", "Not fixed",2);
+					pending_events = 1;
+				}
+					
 			}
         }
         cur = cur->next;
@@ -206,9 +209,10 @@ int checkNewEvents(char *xml_file){
 	}
 }
 
-void saveNewEvent(char *keyword, char *value, int type){
+int saveNewEvent(char *keyword, char *value, int type){
     xmlDocPtr doc;
     xmlNodePtr cur;
+	int done = 0;
 	
 
     doc = xmlParseFile(db_uri);
@@ -225,22 +229,47 @@ void saveNewEvent(char *keyword, char *value, int type){
         return 1;
     }
 
-	if(type == 1) cur = cur->xmlChildrenNode;
+	if(type == 2) cur = cur->xmlChildrenNode;
+	if(type == 0) cur = cur->xmlChildrenNode;
 	
     while(cur != NULL){
-		if(type == 0){
+		if(type == 1){
     		if((!xmlStrcmp(cur->name, (const xmlChar *)"remendo_db"))){
-				xmlNewTextChild(cur, NULL, keyword, value);
+				if(done == 0){
+					xmlNewTextChild(cur, NULL, keyword, value);
+					done = 1;
+				}
 			}
         }else{
 			if((!xmlStrcmp(cur->name, (const xmlChar *)"event"))){
-				xmlNewTextChild(cur, NULL, keyword, value);
+				if(type == 0){
+					return parseName(doc, cur, keyword, value);
+				}else{
+					if(parseName(doc,cur,keyword,value) != 1){
+						xmlNewTextChild(cur, NULL, keyword, value);
+					}
+				}
 			}
 		}
         cur = cur->next;
     }
 	xmlSaveFormatFile(db_uri, doc, 1);
     xmlFreeDoc(doc);
+}
+
+int parseName(xmlDocPtr doc, xmlNodePtr cur, char *keyword, char *value){
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)keyword))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+		    if(strcmp(key, value) == 0){
+				xmlFree(key);
+				return 1;
+			}
+ 	    }
+		cur = cur->next;
+	}
 }
 
 unsigned long dateCharToInt(char *value){
