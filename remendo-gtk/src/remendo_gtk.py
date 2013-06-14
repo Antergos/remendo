@@ -37,6 +37,9 @@ class GUI:
 
 		self.window = self.builder.get_object('remendo')
 		self.event_treeview = self.builder.get_object('event_treeview')
+
+		self.selected_event = ''
+		
 		self.set_event_list()
 
 		self.window.show_all()
@@ -63,11 +66,30 @@ class GUI:
 		root = tree.getroot()
 
 		for event in root.findall('event'):
-			name = event.find('name').text
-			description = event.find('description').text
-			url_script = event.find('url_script').text
-			event_liststore.append([name, "Description: \n" + description + \
-									"\n" + "Script: " + url_script])
+			if event.find('state').text not in 'Fixed, Skipped':
+				name = event.find('name').text
+				description = event.find('description').text
+				url_script = event.find('url_script').text
+				event_liststore.append([name, "Description: \n" + description + \
+										"\n" + "Script: " + url_script])
+
+	def on_event_treeview_cursor_changed(self, treeview):
+		selected = treeview.get_selection()
+		if selected:
+			(ls, iter) = selected.get_selected()
+			if iter:
+				self.selected_event = ls.get_value(iter, 0)
+
+	def on_fixme_button_clicked(self, button):
+		print(self.selected_event)
+
+	def on_manually_button_clicked(self, button):
+		tree = etree.parse('../../remendo/database.db')
+		xpath = './/event[name="%s"]/state' % self.selected_event
+		tree.find(xpath).text = 'Skipped'
+		tree.write('../../remendo/database.db')
+		self.set_event_list()
+
 		
 
 def main():

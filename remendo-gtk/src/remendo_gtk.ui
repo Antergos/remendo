@@ -65,8 +65,9 @@ This is what I got:</property>
               <object class="GtkTreeView" id="event_treeview">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <signal name="cursor-changed" handler="on_event_treeview_cursor_changed" swapped="no"/>
                 <child internal-child="selection">
-                  <object class="GtkTreeSelection" id="treeview-selection1"/>
+                  <object class="GtkTreeSelection" id="event_selection"/>
                 </child>
               </object>
             </child>
@@ -102,6 +103,7 @@ This is what I got:</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_fixme_button_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -115,6 +117,7 @@ This is what I got:</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_manually_button_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

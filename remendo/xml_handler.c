@@ -181,6 +181,7 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
 				saveNewEvent("name", get_node(doc,cur,"name"),1);
 				saveNewEvent("description", get_node(doc,cur,"description"),1);
 				saveNewEvent("url_script", get_node(doc,cur,"url_script"),1);
+				saveNewEvent("state", "Not fixed",1);
 				pending_events = 1;
 			}
         }
@@ -198,7 +199,6 @@ int checkNewEvents(char *xml_file){
 
 	if(pending_events != 0){
 		//show interface
-		//system("./remendo-gtk");
 		return 1;
 	}else{
 		printf("No new events to handle.\n");
