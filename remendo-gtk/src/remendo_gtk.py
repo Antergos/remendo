@@ -19,6 +19,9 @@
 from gi.repository import Gtk, GdkPixbuf, Gdk, Pango
 import os, sys
 import xml.etree.ElementTree as etree
+from urllib.request import urlopen
+from subprocess import Popen
+from threading import Thread
 
 
 #Comment the first line and uncomment the second before installing
@@ -36,9 +39,16 @@ class GUI:
 		self.builder.connect_signals(self)
 
 		self.window = self.builder.get_object('remendo')
+		self.progress_window = self.builder.get_object('progress_window')
 		self.event_treeview = self.builder.get_object('event_treeview')
+		self.ok_progress = self.builder.get_object('ok_progress')
+		self.ok_progress.hide()
+		self.spinner_progress = self.builder.get_object('spinner_progress')
+		self.progress_info = self.builder.get_object('progress_info')
 
 		self.selected_event = ''
+		self.url_script = ''
+		self.local_script = ''
 		
 		self.set_event_list()
 
@@ -81,7 +91,19 @@ class GUI:
 				self.selected_event = ls.get_value(iter, 0)
 
 	def on_fixme_button_clicked(self, button):
-		print(self.selected_event)
+		self.url_from_selected()
+		self.progress_window.show()
+		self.spinner_progress.start()
+		self.download_script()
+		self.progress_info.set_label("Fixing now...")
+		script = Thread(target=self.run_script(), args=(self))
+		script.start()
+		self.progress_info.set_label("Marking event as 'Fixed' in database...")
+		self.event_solved()
+		self.progress_info.set_label("My work is done. Good day!")
+		self.spinner_progress.stop()
+		self.ok_progress.show()
+		
 
 	def on_manually_button_clicked(self, button):
 		tree = etree.parse('../../remendo/database.db')
@@ -90,7 +112,39 @@ class GUI:
 		tree.write('../../remendo/database.db')
 		self.set_event_list()
 
-		
+	def url_from_selected(self):
+		tree = etree.parse('../../remendo/database.db')
+		xpath = './/event[name="%s"]/url_script' % self.selected_event
+		self.url_script = tree.find(xpath).text
+
+	def download_script(self):
+		try:
+			self.progress_info.set_label("Downloading script...")
+			self.local_script = '/tmp/%s.sh' % self.selected_event.replace(" ", "_")
+			script = urlopen(self.url_script)
+			localscript = open(self.local_script, 'wb')
+			localscript.write(script.read())
+			localscript.close()
+		except URLError as e:
+			self.progress_info.set_label("Error downloading script")
+
+	def run_script(self):
+		try:
+			command = ['pkexec', 'bash', self.local_script]
+			p = Popen(command)
+			p.communicate()
+		except:
+			self.progress_info.set_label("Script failed: %s" % self.local_script)
+
+	def event_solved(self):
+		tree = etree.parse('../../remendo/database.db')
+		xpath = './/event[name="%s"]/state' % self.selected_event
+		tree.find(xpath).text = 'Fixed'
+		tree.write('../../remendo/database.db')
+		self.set_event_list()
+
+	def on_ok_progress_clicked(self, button):
+		self.progress_window.hide()
 
 def main():
 	app = GUI()
