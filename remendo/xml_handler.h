@@ -39,7 +39,7 @@ xmlChar *get_attribute(xmlNodePtr cur, char *search_for);
 xmlChar *getCreation(char *xml_file, const xmlChar *node);
 int parse_xml(char *xml_file, char *child, char *db_creation);
 int checkNewEvents(char *xml_file);
-int saveNewEvent(char *keyword, char *value, int type);
+int saveNewEvent(char *keyword, char *id, char *value, int type);
 int parseName(xmlDocPtr doc, xmlNodePtr cur, char *keyword, char *value);
 unsigned long dateCharToInt(char *value);
 

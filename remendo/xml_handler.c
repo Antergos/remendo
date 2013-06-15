@@ -153,6 +153,8 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
     xmlDocPtr doc;
     xmlNodePtr cur;
 	char *eventCreation;
+	int exists;
+	char *id;
 
 	printf("Searching for events...\n");
 
@@ -176,13 +178,15 @@ int parse_xml(char *xml_file, char *child, char *db_creation){
 			eventCreation = get_attribute(cur, "creation");
 
 			if(dateCharToInt(db_creation) <= dateCharToInt(eventCreation)){
-				if(saveNewEvent("name", get_node(doc,cur,"name"),0) != 1){
+				id = get_attribute(cur,"id");
+				exists = saveNewEvent("event", NULL, id,0);
+				if(exists != 1){
 					printf("New event: '%s' to %s...\n", get_node(doc,cur,"name"), db_uri);
-					saveNewEvent("event", NULL,1);
-					saveNewEvent("name", get_node(doc,cur,"name"),2);
-					saveNewEvent("description", get_node(doc,cur,"description"),2);
-					saveNewEvent("url_script", get_node(doc,cur,"url_script"),2);
-					saveNewEvent("state", "Not fixed",2);
+					saveNewEvent("event", NULL, get_attribute(cur,"id"),1);
+					saveNewEvent("name", id, get_node(doc,cur,"name"),2);
+					saveNewEvent("description", id, get_node(doc,cur,"description"),2);
+					saveNewEvent("url_script", id, get_node(doc,cur,"url_script"),2);
+					saveNewEvent("state", id, "Not fixed",2);
 					pending_events = 1;
 				}
 					
@@ -202,6 +206,7 @@ int checkNewEvents(char *xml_file){
 
 	if(pending_events != 0){
 		//show interface
+		pending_events = 0;
 		return 1;
 	}else{
 		printf("No new events to handle.\n");
@@ -209,10 +214,9 @@ int checkNewEvents(char *xml_file){
 	}
 }
 
-int saveNewEvent(char *keyword, char *value, int type){
+int saveNewEvent(char *keyword, char *id, char *value, int type){
     xmlDocPtr doc;
     xmlNodePtr cur;
-	int done = 0;
 	
 
     doc = xmlParseFile(db_uri);
@@ -230,24 +234,23 @@ int saveNewEvent(char *keyword, char *value, int type){
     }
 
 	if(type == 2) cur = cur->xmlChildrenNode;
-	if(type == 0) cur = cur->xmlChildrenNode;
 	
     while(cur != NULL){
+		if(type == 0){
+			if((!xmlStrcmp(cur->name, (const xmlChar *)"remendo_db"))){
+				return parseName(doc, cur, keyword, value);
+			}
+		}
 		if(type == 1){
     		if((!xmlStrcmp(cur->name, (const xmlChar *)"remendo_db"))){
-				if(done == 0){
-					xmlNewTextChild(cur, NULL, keyword, value);
-					done = 1;
-				}
+				xmlNodePtr event_node = xmlNewTextChild(cur, NULL, keyword, NULL);
+				xmlNewProp(event_node, "id", value);
 			}
-        }else{
+		}else{
 			if((!xmlStrcmp(cur->name, (const xmlChar *)"event"))){
-				if(type == 0){
-					return parseName(doc, cur, keyword, value);
-				}else{
-					if(parseName(doc,cur,keyword,value) != 1){
-						xmlNewTextChild(cur, NULL, keyword, value);
-					}
+				xmlChar *current_id = xmlGetProp(cur, "id");
+				if(!strcmp(current_id, id)){
+					xmlNewTextChild(cur, NULL, keyword, value);
 				}
 			}
 		}
@@ -262,7 +265,7 @@ int parseName(xmlDocPtr doc, xmlNodePtr cur, char *keyword, char *value){
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)keyword))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			key = get_attribute(cur, "id");
 		    if(strcmp(key, value) == 0){
 				xmlFree(key);
 				return 1;
