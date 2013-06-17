@@ -51,7 +51,7 @@ static void displayInotifyEvent(struct inotify_event *i, char *argv[]){
 		// Check for unhandled events
 		if(checkNewEvents(remendo_events_file) == 1){
 			if(strcmp(argv[1], "--gtk") == 0){
-				system("./remendo-gtk");
+				system("remendo_gtk.py");
 			}else{
 				printf("QT not implemented yet\n");
 			}

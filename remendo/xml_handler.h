@@ -27,7 +27,7 @@
 
 #define ENCODING "ISO-8859-1"
 
-char *db_uri = "database.db";
+char *db_uri = "/usr/share/remendo/database.db";
 int pending_events = 0;
 
 char timeToString(time_t time);

@@ -24,9 +24,9 @@ from subprocess import Popen
 from threading import Thread
 
 
-UI_FILE = "remendo_gtk.ui"
-#UI_FILE = "/usr/local/share/remendo_gtk/ui/remendo_gtk.ui"
-DATABASE = '../../remendo/database.db'
+#UI_FILE = "remendo_gtk.ui"
+UI_FILE = "/usr/share/remendo_gtk/ui/remendo_gtk.ui"
+DATABASE = '/usr/share/remendo/database.db'
 
 class Script(Thread):
 	def __init__(self):
