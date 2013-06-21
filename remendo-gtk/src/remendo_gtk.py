@@ -26,7 +26,7 @@ from threading import Thread
 
 #UI_FILE = "remendo_gtk.ui"
 UI_FILE = "/usr/share/remendo_gtk/ui/remendo_gtk.ui"
-DATABASE = '/usr/share/remendo/database.db'
+DATABASE = '/var/lib/remendo/database.db'
 
 class Script(Thread):
 	def __init__(self):
