@@ -1,0 +1,8 @@
+### TODO ###
+
+* Download and parse the xml from Arch Linux front page (using their RSS)
+* Make the scripts more secure by using signed scripts with Antergos master key
+* Check scripts signature before executing script
+* Check if the scripts ends succesfully. Show a message if not.
+* Implement the QT version of the frontend
+* Try to figure it out a better way to execute remendo upon boot. Right now remendo creates a sudoers file in /etc/sudoers.d that must be check on top of sudoers files (01-install, 00-remendo) that runs remendo passwordless as super user. Root can't execute remendo because the X server must be configured to accept the root user, and we need remendo to launch the GUI when an event is detected.
